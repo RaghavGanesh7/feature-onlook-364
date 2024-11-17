@@ -8,8 +8,17 @@ import OpenCode from './OpenCode';
 import ProjectBreadcrumb from './ProjectSelect';
 import { Hotkey } from '/common/hotkeys';
 import { Icons } from '@/components/icons';
+import ZoomControls from './ZoomControls';
 
-const EditorTopBar = observer(() => {
+const EditorTopBar = observer(({
+    scale,
+    onPositionChange,
+    onScaleChange
+}: {
+    scale : number
+    onPositionChange : (position:any) => void,
+    onScaleChange : (scale:number) => void;
+}) => {
     const editorEngine = useEditorEngine();
 
     const UNDO_REDO_BUTTONS = [
@@ -77,6 +86,7 @@ const EditorTopBar = observer(() => {
             </div>
             <ModeToggle />
             <div className="flex space-x-2 flex-grow basis-0 justify-end">
+                 <ZoomControls scale={scale} onPositionChange={onPositionChange} onScaleChange={onScaleChange} /> 
                 <OpenCode />
             </div>
         </div>

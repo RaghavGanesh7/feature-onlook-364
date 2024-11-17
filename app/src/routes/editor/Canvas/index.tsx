@@ -5,7 +5,7 @@ import { ReactNode, useEffect, useRef, useState } from 'react';
 import HotkeysArea from './Hotkeys';
 import PanOverlay from './PanOverlay';
 
-const Canvas = observer(({ children }: { children: ReactNode }) => {
+const Canvas = observer(({ children, scale, position, onPositionChange ,onScaleChange }: { children: ReactNode, scale: number, position: any, onPositionChange: (position:any) => void, onScaleChange : (scale:number) => void }) => {
     const ZOOM_SENSITIVITY = 0.006;
     const PAN_SENSITIVITY = 0.52;
     const MIN_ZOOM = 0.1;
@@ -18,13 +18,7 @@ const Canvas = observer(({ children }: { children: ReactNode }) => {
     const editorEngine = useEditorEngine();
     const containerRef = useRef<HTMLDivElement>(null);
     const [isPanning, setIsPanning] = useState(false);
-    const [scale, setScale] = useState(editorEngine.canvas.scale);
-    const [position, setPosition] = useState(editorEngine.canvas.position);
-
-    useEffect(() => {
-        editorEngine.canvas.scale = scale;
-        editorEngine.canvas.position = position;
-    }, [position, scale]);
+    
 
     const handleWheel = (event: WheelEvent) => {
         if (event.ctrlKey || event.metaKey) {
@@ -50,12 +44,12 @@ const Canvas = observer(({ children }: { children: ReactNode }) => {
         const deltaX = (x - position.x) * zoomFactor;
         const deltaY = (y - position.y) * zoomFactor;
 
-        setScale(lintedScale);
+        onScaleChange(lintedScale);
 
         if (newScale < MIN_ZOOM || newScale > MAX_ZOOM) {
             return;
         }
-        setPosition((prevPosition) =>
+        onPositionChange((prevPosition: { x: number; y: number; }) =>
             clampPosition(
                 {
                     x: prevPosition.x - deltaX,
@@ -85,7 +79,7 @@ const Canvas = observer(({ children }: { children: ReactNode }) => {
     const handlePan = (event: WheelEvent) => {
         const deltaX = (event.deltaX + (event.shiftKey ? event.deltaY : 0)) * PAN_SENSITIVITY;
         const deltaY = (event.shiftKey ? 0 : event.deltaY) * PAN_SENSITIVITY;
-        setPosition((prevPosition) =>
+        onPositionChange((prevPosition: { x: number; y: number; }) =>
             clampPosition(
                 {
                     x: prevPosition.x - deltaX,
@@ -138,13 +132,14 @@ const Canvas = observer(({ children }: { children: ReactNode }) => {
     };
 
     return (
-        <HotkeysArea scale={scale} setScale={setScale}>
+        <HotkeysArea scale={scale} setScale={onScaleChange} setPosition={onPositionChange}>
             <div
                 ref={containerRef}
                 className="overflow-hidden bg-background-onlook flex flex-grow relative"
                 onClick={handleCanvasClicked}
             >
                 <div
+                    id='canvas-container'
                     style={{
                         transition: 'transform ease',
                         transform: `translate(${position.x}px, ${position.y}px) scale(${scale})`,
@@ -154,7 +149,7 @@ const Canvas = observer(({ children }: { children: ReactNode }) => {
                     {children}
                 </div>
                 <PanOverlay
-                    setPosition={setPosition}
+                    setPosition={onPositionChange}
                     clampPosition={(position) => clampPosition(position, scale)}
                     isPanning={isPanning}
                     setIsPanning={setIsPanning}

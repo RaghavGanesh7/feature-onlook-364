@@ -1,2 +1,4 @@
+export * from './action';
 export * from './code';
-export * from './editor';
+export * from './location';
+export * from './target';

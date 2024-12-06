@@ -1,3 +1,4 @@
+import { APP_NAME, APP_SCHEMA } from '@onlook/models/constants';
 import { BrowserWindow, app, shell } from 'electron';
 import fixPath from 'fix-path';
 import { createRequire } from 'node:module';
@@ -7,8 +8,9 @@ import { fileURLToPath } from 'node:url';
 import { sendAnalytics } from './analytics';
 import { handleAuthCallback } from './auth';
 import { listenForIpcMessages } from './events';
+import run from './run';
+import terminal from './run/terminal';
 import { updater } from './update';
-import { APP_NAME, APP_SCHEMA } from '@onlook/models/constants';
 
 // Help main inherit $PATH defined in dotfiles (.bashrc/.bash_profile/.zshrc/etc).
 fixPath();
@@ -86,7 +88,18 @@ const initMainWindow = () => {
     });
 };
 
-// Event listeners
+let isCleaningUp = false;
+
+const cleanup = () => {
+    if (isCleaningUp) {
+        return;
+    }
+    isCleaningUp = true;
+
+    run.stopAll();
+    terminal.killAll();
+};
+
 const setupAppEventListeners = () => {
     app.whenReady().then(initMainWindow);
 
@@ -126,6 +139,18 @@ const setupAppEventListeners = () => {
         handleAuthCallback(url);
     });
 
+    process.on('exit', cleanup);
+    process.on('SIGTERM', cleanup);
+    process.on('SIGINT', cleanup);
+
+    process.on('uncaughtException', (error) => {
+        console.error('Uncaught Exception:', error);
+        sendAnalytics('uncaught exception', { error });
+        if (error instanceof TypeError || error instanceof ReferenceError) {
+            cleanup();
+            app.exit(1);
+        }
+    });
     app.on('quit', () => sendAnalytics('quit app'));
 };
 

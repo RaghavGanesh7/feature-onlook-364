@@ -1,5 +1,6 @@
 import { useEditorEngine, useProjectsManager } from '@/components/Context';
-import { getRunProjectCommand, invokeMainChannel } from '@/lib/utils';
+import { invokeMainChannel } from '@/lib/utils';
+import ProjectSettingsModal from '@/routes/projects/ProjectSettingsModal';
 import { MainChannels } from '@onlook/models/constants';
 import { Button } from '@onlook/ui/button';
 import {
@@ -10,10 +11,9 @@ import {
 } from '@onlook/ui/dropdown-menu';
 import { Icons } from '@onlook/ui/icons';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@onlook/ui/tooltip';
-import { toast } from '@onlook/ui/use-toast';
 import { observer } from 'mobx-react-lite';
-import ProjectNameInput from './ProjectNameInput';
 import { useState } from 'react';
+import ProjectNameInput from './ProjectNameInput';
 
 const ProjectBreadcrumb = observer(() => {
     const editorEngine = useEditorEngine();
@@ -48,15 +48,6 @@ const ProjectBreadcrumb = observer(() => {
         project.updatedAt = new Date().toISOString();
         projectsManager.updateProject(project);
     }
-
-    const handleCopyRunCommand = () => {
-        const project = projectsManager.project;
-        if (project && project.folderPath) {
-            const command = getRunProjectCommand(project.folderPath);
-            navigator.clipboard.writeText(command);
-            toast({ title: 'Copied to clipboard' });
-        }
-    };
 
     return (
         <>
@@ -97,16 +88,12 @@ const ProjectBreadcrumb = observer(() => {
                                 {'Open Project Folder'}
                             </div>
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={handleCopyRunCommand}>
-                            <div className="flex row center items-center">
-                                <Icons.ClipboardCopy className="mr-2" />
-                                <div className="flex flex-col">
-                                    <div className="text-smallPlus">{'Copy Run Command'}</div>
-                                    <div className="text-mini text-muted-foreground">
-                                        {'Paste this into Terminal to run your App'}
-                                    </div>
+                        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                            <ProjectSettingsModal project={projectsManager.project}>
+                                <div className="flex row center items-center">
+                                    <Icons.Gear className="mr-2" /> Project Settings
                                 </div>
-                            </div>
+                            </ProjectSettingsModal>
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>

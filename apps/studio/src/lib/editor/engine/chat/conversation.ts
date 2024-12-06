@@ -2,14 +2,14 @@ import { ChatMessageType, type ChatConversation } from '@onlook/models/chat';
 import { MAX_NAME_LENGTH } from '@onlook/models/constants';
 import type { CoreMessage } from 'ai';
 import { makeAutoObservable } from 'mobx';
-import { nanoid } from 'nanoid';
+import { nanoid } from 'nanoid/non-secure';
 import { AssistantChatMessageImpl } from './message/assistant';
 import { UserChatMessageImpl } from './message/user';
 
 export class ChatConversationImpl implements ChatConversation {
     id: string;
     projectId: string;
-    displayName: string | undefined;
+    displayName: string | null = null;
     messages: (UserChatMessageImpl | AssistantChatMessageImpl)[];
     createdAt: string;
     updatedAt: string;
@@ -52,13 +52,7 @@ export class ChatConversationImpl implements ChatConversation {
 
     getCoreMessages() {
         const messages: CoreMessage[] = this.messages
-            .map((m, index) => {
-                if (index === this.messages.length - 1) {
-                    return m.toCurrentMessage();
-                } else {
-                    return m.toPreviousMessage();
-                }
-            })
+            .map((m) => m.toCurrentMessage())
             .filter((m) => m !== undefined && m.content !== '');
         return messages;
     }

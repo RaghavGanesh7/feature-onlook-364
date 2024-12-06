@@ -103,7 +103,7 @@ import {
     AlignTopIcon,
     AlignCenterVerticallyIcon,
     AlignBottomIcon,
-    SpaceBetweenVerticallyIcon
+    SpaceBetweenVerticallyIcon,
 } from '@radix-ui/react-icons';
 import { cn } from '../../utils';
 import H1Icon from './header-level-icons/h1Icon';
@@ -713,6 +713,39 @@ export const Icons = {
                 d="M2.89885 1.78968C2.89885 1.57167 3.07558 1.39494 3.29359 1.39494H11.7146C11.9326 1.39494 12.1094 1.57167 12.1094 1.78968V13.2107C12.1094 13.4287 11.9326 13.6055 11.7146 13.6055H3.29359C3.07558 13.6055 2.89885 13.4287 2.89885 13.2107V1.78968ZM3.29359 0.605469C2.63956 0.605469 2.10938 1.13566 2.10938 1.78968V13.2107C2.10938 13.8648 2.63956 14.3949 3.29359 14.3949H11.7146C12.3687 14.3949 12.8988 13.8648 12.8988 13.2107V1.78968C12.8988 1.13566 12.3687 0.605469 11.7146 0.605469H3.29359ZM6.00041 12.2241C5.84781 12.2241 5.7241 12.3478 5.7241 12.5004C5.7241 12.653 5.84781 12.7767 6.00041 12.7767H9.00041C9.15302 12.7767 9.27673 12.653 9.27673 12.5004C9.27673 12.3478 9.15302 12.2241 9.00041 12.2241H6.00041Z"
                 fill="black"
                 style={{ fill: 'black', fillOpacity: 1 }}
+            />
+        </svg>
+    ),
+    Terminal: ({ className, ...props }: IconProps) => (
+        <svg
+            width="15"
+            height="15"
+            viewBox="0 0 15 15"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            className={className}
+            {...props}
+        >
+            <rect
+                x="1.47"
+                y="1.97"
+                width="12.06"
+                height="11.06"
+                rx="1.03"
+                stroke="currentColor"
+                strokeWidth="0.94"
+            />
+            <path
+                d="M4 9.5L6 7.5L4 5.5"
+                stroke="currentColor"
+                strokeWidth="0.84"
+                strokeLinecap="round"
+            />
+            <path
+                d="M7.5 9.5L10.9989 9.49303"
+                stroke="currentColor"
+                strokeWidth="0.9"
+                strokeLinecap="round"
             />
         </svg>
     ),
